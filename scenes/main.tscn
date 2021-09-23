@@ -75,7 +75,11 @@ func import(name: String, pbf: String, x: int, y: int, z: int):
 	var location2 = \"%s/%s\" % [layer.project, layer.table]
 	var directory: Directory = Directory.new()
 	directory.make_dir_recursive(location)
-	var data = MvtTile.new(layer, x, y, z)
+	var data = MvtTile.new()
+	data.layer = layer
+	data.x = x
+	data.y = y
+	data.z = z
 	var file = File.new()
 	if file.open(pbf, File.READ) != OK:
 		Log.warning('failed to open %s' % pbf)
