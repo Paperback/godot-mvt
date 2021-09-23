@@ -1,0 +1,187 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scenes/menu.gd" type="Script" id=1]
+[ext_resource path="res://scenes/requests.gd" type="Script" id=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends VBoxContainer
+
+onready var uri: LineEdit = $Form/Uri
+onready var folder: LineEdit = $Form/Folder
+onready var button: Button = $Form/Button
+var disabled: bool = false setget set_disabled, get_disabled
+
+func set_disabled(new_value: bool):
+	uri.editable = !new_value
+	folder.editable = !new_value
+	button.disabled = new_value
+	disabled = new_value
+
+func get_disabled() -> bool:
+	return disabled
+
+signal start_request(uri)
+signal request_finished()
+
+func _on_Button_pressed():
+	set_disabled(true)
+	emit_signal(\"start_request\", uri.text, folder.text)
+	
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends VBoxContainer
+
+var rows: Dictionary = {}
+func _on_Layers_layer_informed(layer):
+	var row = HBoxContainer.new()
+	var namelabel = Label.new()
+	var infolabel = Label.new()
+	namelabel.text = layer.id
+	if layer.has_meta('count'):
+		infolabel.text = str(layer.get_meta('count')-layer.get_meta('left')) + '/' + str(layer.get_meta('count'))
+	row.add_child(namelabel)
+	row.add_child(infolabel)
+	add_child(row)
+	rows[layer] = row
+
+func _on_Layers_updated(layer):
+	remove_child(rows[layer])
+	rows.erase(layer)
+	_on_Layers_layer_informed(layer)
+"
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends Node
+
+var layers: Dictionary = {}
+
+func inform(name: String, data: Dictionary):
+	layers[name] = MvtLayer.new(data)
+	emit_signal(\"layer_informed\", layers[name])
+
+func update(name: String, key: String, data):
+	layers[name].set(key, data)
+	emit_signal(\"layer_updated\", layers[name])
+
+signal layer_updated(layer)
+signal layer_informed(layer)
+
+func import(name: String, pbf: String, x: int, y: int, z: int):
+	var layer: MvtLayer = layers[name]
+	
+	#Log.verbose('Importing %s: %s' % [name, pbf])
+	var location = \"%s/%s/%s/%s\" % [layer.project, layer.table, 'resources', z]
+	var location2 = \"%s/%s\" % [layer.project, layer.table]
+	var directory: Directory = Directory.new()
+	directory.make_dir_recursive(location)
+	var data = MvtTile.new(layer, x, y, z)
+	var file = File.new()
+	if file.open(pbf, File.READ) != OK:
+		Log.warning('failed to open %s' % pbf)
+		
+		ResourceSaver.save(location + \"/%s-%s.tres\" % [x, y], data)
+	else:
+		var buffer = file.get_buffer(file.get_len())
+		var mvt = preload(\"res://addons/mvt/MvtTile.cs\").new()
+		geometry[name] = []
+		var tile = mvt.import(self, buffer, name)
+		file.close()
+		data.geometry = geometry[name]
+		ResourceSaver.save(location + \"/%s-%s.tres\" % [x, y], data)
+		#ResourceSaver.save(location2 + \"/layer.tres\", layer)
+
+var geometry := {}
+func geometry_add(geom, name: String):
+	geometry[name].push_back(geom)
+"
+
+[node name="Main" type="Node2D"]
+
+[node name="Menu" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 15.0
+margin_bottom = 15.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Grid" type="GridContainer" parent="Menu"]
+margin_right = 40.0
+margin_bottom = 40.0
+custom_constants/vseparation = 15
+custom_constants/hseparation = 15
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Start" type="VBoxContainer" parent="Menu/Grid"]
+margin_right = 453.0
+margin_bottom = 24.0
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Form" type="HBoxContainer" parent="Menu/Grid/Start"]
+margin_right = 453.0
+margin_bottom = 24.0
+
+[node name="Folder" type="LineEdit" parent="Menu/Grid/Start/Form"]
+margin_right = 160.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 160, 0 )
+text = "res://data/maps"
+placeholder_text = "URI"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Uri" type="LineEdit" parent="Menu/Grid/Start/Form"]
+margin_left = 164.0
+margin_right = 408.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 244, 0 )
+text = "http://192.168.1.191:3000"
+placeholder_text = "URI"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="Menu/Grid/Start/Form"]
+margin_left = 412.0
+margin_right = 453.0
+margin_bottom = 24.0
+text = "Start"
+
+[node name="Layers" type="VBoxContainer" parent="Menu/Grid"]
+margin_top = 39.0
+margin_right = 453.0
+margin_bottom = 39.0
+script = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Row" type="HBoxContainer" parent="Menu/Grid/Layers"]
+margin_right = 453.0
+
+[node name="Requests" type="Node" parent="."]
+script = ExtResource( 2 )
+
+[node name="Layers" type="Node" parent="."]
+script = SubResource( 3 )
+
+[connection signal="start_request" from="Menu/Grid/Start" to="Requests" method="_on_Start_request"]
+[connection signal="pressed" from="Menu/Grid/Start/Form/Button" to="Menu/Grid/Start" method="_on_Button_pressed"]
+[connection signal="layer_informed" from="Layers" to="Menu/Grid/Layers" method="_on_Layers_layer_informed"]
+[connection signal="layer_informed" from="Layers" to="Requests" method="_on_Layers_informed"]
+[connection signal="layer_updated" from="Layers" to="Menu/Grid/Layers" method="_on_Layers_updated"]

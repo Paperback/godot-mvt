@@ -1,0 +1,135 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=4
+
+_global_script_classes=[ {
+"base": "RigidBody",
+"class": "Agent",
+"language": "GDScript",
+"path": "res://scenes/old/main/Agent.gd"
+}, {
+"base": "Spatial",
+"class": "CameraRig",
+"language": "GDScript",
+"path": "res://scenes/old/rig/rig.gd"
+}, {
+"base": "Node2D",
+"class": "CameraRig2D",
+"language": "GDScript",
+"path": "res://scenes/old/rig2d/rig2d.gd"
+}, {
+"base": "RawKind",
+"class": "Event",
+"language": "GDScript",
+"path": "res://scenes/old/main2d/Node.gd"
+}, {
+"base": "Reference",
+"class": "Job",
+"language": "GDScript",
+"path": "res://addons/evoke/source/Job.gd"
+}, {
+"base": "Object",
+"class": "Map",
+"language": "GDScript",
+"path": "res://source/map/map.gd"
+}, {
+"base": "Object",
+"class": "MapBounds",
+"language": "GDScript",
+"path": "res://source/map/bounds.gd"
+}, {
+"base": "Object",
+"class": "MapCoordinates",
+"language": "GDScript",
+"path": "res://source/map/coordinates.gd"
+}, {
+"base": "Resource",
+"class": "MapData",
+"language": "GDScript",
+"path": "res://scenes/old/main/MapData.gd"
+}, {
+"base": "Node2D",
+"class": "MapNode",
+"language": "GDScript",
+"path": "res://source/map/node.gd"
+}, {
+"base": "Node2D",
+"class": "MapTile",
+"language": "GDScript",
+"path": "res://source/map/tile.gd"
+}, {
+"base": "Resource",
+"class": "MvtLayer",
+"language": "GDScript",
+"path": "res://source/mvt/layer.gd"
+}, {
+"base": "Resource",
+"class": "MvtMap",
+"language": "GDScript",
+"path": "res://source/mvt/map.gd"
+}, {
+"base": "Resource",
+"class": "MvtTile",
+"language": "GDScript",
+"path": "res://source/mvt/tile.gd"
+}, {
+"base": "Node2D",
+"class": "Potato",
+"language": "GDScript",
+"path": "res://scenes/old/main2d/Tile.gd"
+}, {
+"base": "Object",
+"class": "TileBounds",
+"language": "GDScript",
+"path": "res://source/map/tile/bounds.gd"
+} ]
+_global_script_class_icons={
+"Agent": "",
+"CameraRig": "",
+"CameraRig2D": "",
+"Event": "",
+"Job": "",
+"Map": "",
+"MapBounds": "",
+"MapCoordinates": "",
+"MapData": "",
+"MapNode": "",
+"MapTile": "",
+"MvtLayer": "",
+"MvtMap": "",
+"MvtTile": "",
+"Potato": "",
+"TileBounds": ""
+}
+
+[application]
+
+config/name="GodotMVT"
+run/main_scene="res://scenes/main.tscn"
+config/icon="res://icon.png"
+
+[autoload]
+
+Log="*res://addons/evoke/autoload/log.gd"
+Application="*res://addons/evoke/autoload/application.gd"
+Util="*res://addons/evoke/autoload/util.gd"
+MeshHelper="*res://addons/evoke/autoload/mesh.gd"
+
+[global]
+
+version=0
+title=""
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+environment/default_environment="res://default_env.tres"

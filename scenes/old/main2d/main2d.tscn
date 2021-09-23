@@ -1,0 +1,360 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://scenes/main2d/main2d.gd" type="Script" id=1]
+[ext_resource path="res://scenes/rig2d/rig2d.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scenes/starwars/importer/csv/Kind.gd" type="Script" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends PanelContainer
+
+onready var raw: RawServer = $Raw
+#onready var kinds: Dictionary = {}
+#onready var entries: Dictionary = {}
+onready var tree_e: Tree = $Container/TreeEntries
+onready var tree_i: Tree = $Container/TreeInfo
+
+#func _ready():
+#	tree_e.register(raw)
+#	tree_i.register(raw)
+	
+#func _sync_from():
+#	for kind in raw.kinds:
+#		if(kinds.has(kind)): continue
+##		kinds[kind] = tree.create_item(root)
+##		kinds[kind].set_text(0, kind)
+#	for entry in raw.entries:
+#		var e: RawEntry = raw.entries[entry]
+#		if(entries.has(e.meta.name)): continue
+##		entries[e.meta.name] = tree.create_item(kinds[e.kind])
+#		entries[e.meta.name].set_text(0, e.meta.name)
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends RawServer
+
+func _ready():
+	register('Adversary', $Adversary)
+	register('Weapon', $Weapon)
+	register('Gear', $Gear)
+	register('Armor', $Armor)
+	_register()
+	_module('res://data/raws/starwars')
+
+#func _on_Button_button_down():
+#	_dirty = true
+
+#func _loaded(entries: Dictionary):
+#	var conditions = {
+#		'env': 'development'
+#	}
+#	var e = _satifsy(conditions)
+#	print(e)
+"
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends Tree
+
+var root = create_item()
+onready var raw = $\"../../Raw\"
+var kinds := {}
+var entries := {}
+
+func _ready():
+	set_hide_root(true)
+
+func _on_Raw_kind_registered(kind):
+	if not kinds.has(kind.name):
+		kinds[kind.name] = create_item(root)
+		kinds[kind.name].set_text(0, kind.name)
+
+func _on_Raw_entry_registered(entry):
+	var id = entry.hash()
+	if entries.has(id): return
+	if not kinds.has(entry.kind): return
+	var row: TreeItem = create_item(kinds[entry.kind])
+	if entry.meta.has('label'):
+		row.set_text(0, entry.meta.label)
+	elif entry.meta.has('id'):
+		row.set_text(0, entry.meta.id)
+	else:
+		row.set_text(0, id)
+	entries[id] = entry
+	row.set_meta('entry', entry)
+
+func _on_Importer_entry_registered(entry):
+	_on_Raw_entry_registered(entry)
+
+func _on_Importer_kind_registered(kind):
+	_on_Raw_kind_registered(kind)
+"
+
+[sub_resource type="GDScript" id=4]
+script/source = "extends Tree
+
+onready var root = create_item()
+onready var connected: Tree = $\"../TreeEntries\"
+onready var raw = $\"../../Raw\"
+onready var entries := {}
+
+func _ready():
+	set_hide_root(true)
+
+func register(raws):
+	pass
+
+func _on_TreeEntries_cell_selected():
+	var item: TreeItem = connected.get_selected()
+	var entry: RawEntry = item.get_meta('entry')
+	if not entry: return
+	clear()
+	root = create_item()
+	_info_version(entry)
+	_info_kind(entry)
+	_info_hash(entry)
+	_info_meta(entry)
+	_info_spec(entry)
+	_info_data(entry)
+
+func _info_kind(entry):
+	var info = create_item(root)
+	info.set_text(0, 'Kind')
+	info.set_text(1, entry.kind)
+#
+#func _info_name(entry):
+#	var info = create_item(root)
+#	info.set_text(0, 'Name')
+#	info.set_text(1, entry.name)
+	
+func _info_version(entry):
+	var info = create_item(root)
+	info.set_text(0, 'Version')
+	info.set_text(1, entry.version)
+
+func _info_spec(entry):
+	var info = create_item(root)
+	info.set_text(0, 'Spec')
+	for s in entry.spec.keys():
+		var si = create_item(info)
+		si.set_text(0, s)
+		if typeof(entry.spec[s]) == TYPE_STRING or typeof(entry.spec[s]) == TYPE_INT:
+			si.set_text(1, entry.spec[s])
+		else:
+			_info_arr(entry.spec[s], si)
+#		si.set_text(1, entry.spec[s])
+
+
+func _info_meta(entry):
+	var info = create_item(root)
+	info.set_text(0, 'Meta')
+	for m in entry.meta.keys():
+		var mi = create_item(info)
+		mi.set_text(0, m)
+		if typeof(entry.meta[m]) == TYPE_STRING or typeof(entry.meta[m]) == TYPE_INT:
+			mi.set_text(1, entry.meta[m])
+		else:
+			_info_arr(entry.meta[m], mi)
+#		si.set_text(1, entry.spec[s])
+
+func _info_data(entry):
+	var info = create_item(root)
+	info.set_text(0, 'Data')
+	for d in entry.data.keys():
+		var di = create_item(info)
+		di.set_text(0, d)
+		if typeof(entry.data[d]) == TYPE_STRING or typeof(entry.data[d]) == TYPE_INT:
+			di.set_text(1, \"%s\" % entry.data[d])
+		else:
+			_info_arr(entry.data[d], di)
+#		si.set_text(1, entry.spec[s])
+
+func _info_hash(entry):
+	var info = create_item(root)
+	info.set_text(0, '')
+	info.set_text(1, entry.to_hash())
+
+func _info_arr(data, item):
+	if typeof(data) == TYPE_STRING or typeof(data) == TYPE_INT or typeof(data) == TYPE_REAL or typeof(data) == TYPE_BOOL:
+		item.set_text(1, \"%s\" % data)
+	else:
+		if(typeof(data) == TYPE_ARRAY):
+			for k in data:
+				var i = create_item(item)
+				i.set_text(0, '')
+				if typeof(k) == TYPE_STRING:
+					i.set_text(1, k)
+				if typeof(k) == TYPE_ARRAY:
+					_info_arr(k, i)
+#					for kk in data.keys():
+#						i.set_text(0, kk)
+#						_info_arr(data[k], i)
+##					for kk in k:
+##						var ii = create_item(i)
+##						ii.set_text(1, kk)
+				if typeof(k) == TYPE_REAL:
+					i.set_text(1, \"%s\" % k)
+					
+				
+		else:
+			var i = create_item(item)
+			for k in data.keys():
+				i.set_text(0, k)
+				_info_arr(data[k], i)
+
+#func _info_arr(d, node):
+##	if(typeof(d) == TYPE_ARRAY or typeof(d) == TYPE_DICTIONARY)
+#	if(typeof(d) == TYPE_STRING or typeof(d) == TYPE_INT):
+#		node.set_text(0, name)
+#		node.set_text(1, d)
+#	else:
+#		var i = create_item(node)
+#		_info_arr(name, d, i)
+
+#func _info_meta(entry):
+#	var info = create_item(root)
+#	info.set_text(0, 'Version')
+#	info.set_text(1, entry.version)
+"
+
+[node name="Main2D" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="Rig2D" parent="." instance=ExtResource( 2 )]
+position = Vector2( 516.667, -1954.09 )
+
+[node name="Camera2D" type="Camera2D" parent="Rig2D"]
+anchor_mode = 0
+current = true
+zoom = Vector2( 408.249, 408.249 )
+drag_margin_left = 0.0
+drag_margin_top = 0.0
+drag_margin_right = 0.0
+drag_margin_bottom = 0.0
+
+[node name="CenterContainer" type="Control" parent="Rig2D/Camera2D"]
+visible = false
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tile" type="PanelContainer" parent="Rig2D/Camera2D/CenterContainer"]
+visible = false
+margin_right = 350.0
+margin_bottom = 740.0
+rect_min_size = Vector2( 350, 740 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Container" type="VSplitContainer" parent="Rig2D/Camera2D/CenterContainer/Tile"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 343.0
+margin_bottom = 733.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TreeEntries" type="Tree" parent="Rig2D/Camera2D/CenterContainer/Tile/Container"]
+margin_right = 336.0
+margin_bottom = 357.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TreeInfo" type="Tree" parent="Rig2D/Camera2D/CenterContainer/Tile/Container"]
+margin_top = 369.0
+margin_right = 336.0
+margin_bottom = 726.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+
+[node name="UI" type="MarginContainer" parent="Rig2D/Camera2D"]
+anchor_right = 1.0
+margin_bottom = 740.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Raw" type="PanelContainer" parent="Rig2D/Camera2D/UI"]
+margin_right = 350.0
+margin_bottom = 740.0
+rect_min_size = Vector2( 350, 740 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Raw" type="Node" parent="Rig2D/Camera2D/UI/Raw"]
+script = SubResource( 2 )
+
+[node name="Weapon" type="Node" parent="Rig2D/Camera2D/UI/Raw/Raw"]
+script = ExtResource( 3 )
+
+[node name="Adversary" type="Node" parent="Rig2D/Camera2D/UI/Raw/Raw"]
+script = ExtResource( 3 )
+
+[node name="Armor" type="Node" parent="Rig2D/Camera2D/UI/Raw/Raw"]
+script = ExtResource( 3 )
+
+[node name="Gear" type="Node" parent="Rig2D/Camera2D/UI/Raw/Raw"]
+script = ExtResource( 3 )
+
+[node name="Container" type="VSplitContainer" parent="Rig2D/Camera2D/UI/Raw"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 343.0
+margin_bottom = 733.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="TreeEntries" type="Tree" parent="Rig2D/Camera2D/UI/Raw/Container"]
+margin_right = 336.0
+margin_bottom = 357.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = SubResource( 3 )
+
+[node name="TreeInfo" type="Tree" parent="Rig2D/Camera2D/UI/Raw/Container"]
+margin_top = 369.0
+margin_right = 336.0
+margin_bottom = 726.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+script = SubResource( 4 )
+
+[node name="VSeparator" type="VSeparator" parent="Rig2D/Camera2D/UI/Raw/Container"]
+margin_top = 723.0
+margin_right = 336.0
+margin_bottom = 726.0
+size_flags_horizontal = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="Rig2D/Camera2D/UI/Raw/Container/VSeparator"]
+anchor_left = 0.5
+anchor_right = 0.5
+margin_left = -20.0
+margin_right = 20.0
+margin_bottom = 40.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="Rig2D/Camera2D/UI/Raw/Container/VSeparator/CenterContainer"]
+margin_left = 5.0
+margin_top = 10.0
+margin_right = 35.0
+margin_bottom = 30.0
+text = "tet"
+
+[connection signal="cell_selected" from="Rig2D/Camera2D/CenterContainer/Tile/Container/TreeEntries" to="Rig2D/Camera2D/CenterContainer/Tile/Container/TreeInfo" method="_on_TreeEntries_cell_selected"]
+[connection signal="item_activated" from="Rig2D/Camera2D/CenterContainer/Tile/Container/TreeEntries" to="Rig2D/Camera2D/CenterContainer/Tile/Container/TreeInfo" method="_on_TreeEntries_item_activated"]
+[connection signal="item_double_clicked" from="Rig2D/Camera2D/CenterContainer/Tile/Container/TreeEntries" to="Rig2D/Camera2D/CenterContainer/Tile/Container/TreeInfo" method="_on_TreeEntries_item_double_clicked"]
+[connection signal="entry_registered" from="Rig2D/Camera2D/UI/Raw/Raw" to="Rig2D/Camera2D/UI/Raw/Container/TreeEntries" method="_on_Raw_entry_registered"]
+[connection signal="kind_registered" from="Rig2D/Camera2D/UI/Raw/Raw" to="Rig2D/Camera2D/UI/Raw/Container/TreeEntries" method="_on_Raw_kind_registered"]
+[connection signal="cell_selected" from="Rig2D/Camera2D/UI/Raw/Container/TreeEntries" to="Rig2D/Camera2D/UI/Raw/Container/TreeInfo" method="_on_TreeEntries_cell_selected"]
+[connection signal="item_activated" from="Rig2D/Camera2D/UI/Raw/Container/TreeEntries" to="Rig2D/Camera2D/UI/Raw/Container/TreeInfo" method="_on_TreeEntries_item_activated"]
+[connection signal="item_double_clicked" from="Rig2D/Camera2D/UI/Raw/Container/TreeEntries" to="Rig2D/Camera2D/UI/Raw/Container/TreeInfo" method="_on_TreeEntries_item_double_clicked"]
+[connection signal="button_down" from="Rig2D/Camera2D/UI/Raw/Container/VSeparator/CenterContainer/Button" to="Rig2D/Camera2D/UI/Raw/Raw" method="_on_Button_button_down"]
