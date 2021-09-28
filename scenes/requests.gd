@@ -4,12 +4,6 @@ var uri: String = ""
 var project: String = ""
 onready var layers = $"../Layers"
 
-func _http_index_request_completed(result, response_code, headers, body):
-	var response = parse_json(body.get_string_from_utf8())
-	for k in response.keys():
-		Log.info('Requests index: %s' % k)
-		layers.inform(k, response[k])
-
 func _http_layer_info_request_completed(result, response_code, headers, body):
 	var response = parse_json(body.get_string_from_utf8())
 	layers.update(response.name, 'tile', response)
@@ -26,20 +20,12 @@ func _http_layer_pbf_request_completed(result, response_code, headers, body, lay
 	layers.import(layer.id, tile, x, y, z)
 	layers.emit_signal("layer_updated", layer)
 
-func _on_Start_request(location, folder):
-	uri = location
-	project = folder
-	var request = HTTPRequest.new()
-	add_child(request)
-	request.connect("request_completed", self, "_http_index_request_completed")
-	Log.verbose("Request index: %s " % uri)
-	var error = request.request(uri + '/index.json')
-	if error != OK:
-		Log.info(error)
-		Log.fatal("HTTP Request failed: %s" % uri)
+
+
 
 func _on_Layers_informed(layer: MvtLayer):
 	var request = HTTPRequest.new()
+	request.use_threads = true
 	add_child(request)
 	request.connect("request_completed", self, "_http_layer_info_request_completed")
 	Log.verbose("Request layer: %s " % layer.id)
@@ -59,6 +45,7 @@ func _on_Layer_request(layer: MvtLayer, x: int, y: int, z:int):
 
 func _on_Layer_Tile_request(layer: MvtLayer, x: int, y: int, z: int, location: String):
 	var request = HTTPRequest.new()
+	request.use_threads = true
 	var path = "%s/%s/pbf/%s/%s-%s.pbf" % [project, layer.table, z, x, y]
 	if not layer.has_meta('count'): 
 		layer.set_meta('count', 0)

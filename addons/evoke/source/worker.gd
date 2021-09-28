@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 	
 	if done_job:
 		if is_instance_valid(done_job.requester):
-			done_job.requester.call(done_job.callback_func, done_job)
+			done_job.requester.call(done_job.callback, done_job)
 		else:
 			print("instance_valid " + str(done_job.requester))
 			done_job._on_requester_invalid()

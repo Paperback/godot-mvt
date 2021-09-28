@@ -29,10 +29,25 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scenes/old/main2d/Node.gd"
 }, {
+"base": "RequestJob",
+"class": "IndexRequestJob",
+"language": "GDScript",
+"path": "res://source/jobs/index_request_job.gd"
+}, {
 "base": "Reference",
 "class": "Job",
 "language": "GDScript",
 "path": "res://addons/evoke/source/Job.gd"
+}, {
+"base": "RequestJob",
+"class": "LayerIndexRequestJob",
+"language": "GDScript",
+"path": "res://source/jobs/layer_tile_request_job.gd"
+}, {
+"base": "RequestJob",
+"class": "LayerTileRequestJob",
+"language": "GDScript",
+"path": "res://source/jobs/layer_index_request_job.gd"
 }, {
 "base": "Object",
 "class": "Map",
@@ -70,6 +85,11 @@ _global_script_classes=[ {
 "path": "res://source/mvt/layer.gd"
 }, {
 "base": "Resource",
+"class": "MvtLayerTiles",
+"language": "GDScript",
+"path": "res://source/mvt/layer_tiles.gd"
+}, {
+"base": "Resource",
 "class": "MvtMap",
 "language": "GDScript",
 "path": "res://source/mvt/map.gd"
@@ -84,6 +104,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://scenes/old/main2d/Tile.gd"
 }, {
+"base": "Job",
+"class": "RequestJob",
+"language": "GDScript",
+"path": "res://source/jobs/request_job.gd"
+}, {
 "base": "Object",
 "class": "TileBounds",
 "language": "GDScript",
@@ -94,7 +119,10 @@ _global_script_class_icons={
 "CameraRig": "",
 "CameraRig2D": "",
 "Event": "",
+"IndexRequestJob": "",
 "Job": "",
+"LayerIndexRequestJob": "",
+"LayerTileRequestJob": "",
 "Map": "",
 "MapBounds": "",
 "MapCoordinates": "",
@@ -102,16 +130,18 @@ _global_script_class_icons={
 "MapNode": "",
 "MapTile": "",
 "MvtLayer": "",
+"MvtLayerTiles": "",
 "MvtMap": "",
 "MvtTile": "",
 "Potato": "",
+"RequestJob": "",
 "TileBounds": ""
 }
 
 [application]
 
 config/name="GodotMVT"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/main/main.tscn"
 config/icon="res://icon.png"
 
 [autoload]
@@ -120,11 +150,24 @@ Log="*res://addons/evoke/autoload/log.gd"
 Application="*res://addons/evoke/autoload/application.gd"
 Util="*res://addons/evoke/autoload/util.gd"
 MeshHelper="*res://addons/evoke/autoload/mesh.gd"
+Worker="*res://addons/evoke/source/worker.gd"
+State="*res://source/autoload/state.gd"
 
 [global]
 
 version=0
 title=""
+
+[memory]
+
+limits/message_queue/max_size_kb=32768
+limits/command_queue/multithreading_queue_size_kb=1024
+
+[network]
+
+limits/tcp/connect_timeout_seconds=360
+limits/debugger_stdout/max_messages_per_frame=20
+limits/debugger_stdout/max_errors_per_second=200
 
 [physics]
 

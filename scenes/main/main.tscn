@@ -1,0 +1,217 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scenes/menu.gd" type="Script" id=2]
+[ext_resource path="res://scenes/layers/layers.tscn" type="PackedScene" id=3]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends VBoxContainer
+
+onready var host: LineEdit = $Form/Host
+onready var port: LineEdit = $Form/Port
+onready var folder: LineEdit = $Form/Folder
+onready var button: Button = $Form/Button
+
+onready var f1: Button = $Form/FeaturePBF
+onready var f2: Button = $Form/FeatureResource
+onready var f3: Button = $Form/FeatureOverwrite
+onready var layers: Node = get_parent().find_node(\"Layers\")
+var disabled: bool = false setget set_disabled, get_disabled
+
+func set_disabled(new_value: bool):
+	host.editable = !new_value
+	port.editable = !new_value
+	folder.editable = !new_value
+	button.disabled = new_value
+	f1.disabled = new_value
+	f2.disabled = new_value
+	f3.disabled = new_value
+	disabled = new_value
+
+func get_disabled() -> bool:
+	return disabled
+
+signal start_request(host, port, folder)
+
+func _on_Button_pressed():
+	set_disabled(true)
+	_index_request()
+	State.host = host.text
+	State.port = port.text
+	State.project = folder.text
+	emit_signal(\"start_request\", host.text, port.text, folder.text)
+
+
+func _index_request_completed(result, response_code, headers, body):
+	var response = parse_json(body.get_string_from_utf8())
+	for k in response.keys():
+		layers.download(response[k])
+
+func _index_request():
+	var uri = \"http://%s:%s\" % [host.text, port.text]
+	var request = HTTPRequest.new()
+	add_child(request)
+	request.connect(\"request_completed\", self, \"_index_request_completed\")
+	Log.verbose(\"Request index: %s \" % uri)
+	var error = request.request(uri + '/index.json')
+	if error != OK:
+		Log.info(error)
+		Log.fatal(\"HTTP Request failed: %s\" % uri)
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends CheckBox
+
+func _init():
+	pressed = State.feature.overwrite
+
+func _pressed():
+	State.feature.overwrite = self.pressed
+"
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends CheckBox
+
+func _ready():
+	pressed = State.feature.resource
+
+func _pressed():
+	State.feature.resource = self.pressed
+"
+
+[node name="Main" type="Node2D"]
+
+[node name="Menu" type="Control" parent="."]
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+margin_left = 15.0
+margin_top = 15.0
+margin_right = 15.0
+margin_bottom = 15.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Grid" type="GridContainer" parent="Menu"]
+margin_right = 40.0
+margin_bottom = 40.0
+custom_constants/vseparation = 5
+custom_constants/hseparation = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Start" type="VBoxContainer" parent="Menu/Grid"]
+margin_right = 712.0
+margin_bottom = 24.0
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Form" type="HBoxContainer" parent="Menu/Grid/Start"]
+margin_right = 712.0
+margin_bottom = 24.0
+
+[node name="Folder" type="LineEdit" parent="Menu/Grid/Start/Form"]
+margin_right = 160.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 160, 0 )
+text = "res://data/maps"
+placeholder_text = "URI"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Host" type="LineEdit" parent="Menu/Grid/Start/Form"]
+margin_left = 164.0
+margin_right = 275.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 111, 0 )
+text = "192.168.1.191"
+placeholder_text = "Host"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Port" type="LineEdit" parent="Menu/Grid/Start/Form"]
+margin_left = 279.0
+margin_right = 337.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 44, 0 )
+text = "3000"
+placeholder_text = "Port"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Button" type="Button" parent="Menu/Grid/Start/Form"]
+margin_left = 341.0
+margin_right = 382.0
+margin_bottom = 24.0
+text = "Start"
+
+[node name="FeaturePBF" type="CheckBox" parent="Menu/Grid/Start/Form"]
+margin_left = 386.0
+margin_right = 499.0
+margin_bottom = 24.0
+pressed = true
+text = "download pbf"
+script = SubResource( 2 )
+
+[node name="FeatureOverwrite" type="CheckBox" parent="Menu/Grid/Start/Form"]
+margin_left = 503.0
+margin_right = 591.0
+margin_bottom = 24.0
+pressed = true
+text = "overwrite"
+script = SubResource( 2 )
+
+[node name="FeatureResource" type="CheckBox" parent="Menu/Grid/Start/Form"]
+margin_left = 595.0
+margin_right = 712.0
+margin_bottom = 24.0
+text = "save resource"
+script = SubResource( 3 )
+
+[node name="VSeparator2" type="HSeparator" parent="Menu/Grid"]
+margin_top = 29.0
+margin_right = 712.0
+margin_bottom = 33.0
+
+[node name="Layers" parent="Menu/Grid" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = 38.0
+margin_right = 712.0
+margin_bottom = 38.0
+
+[node name="VSeparator" type="HSeparator" parent="Menu/Grid"]
+margin_top = 43.0
+margin_right = 712.0
+margin_bottom = 47.0
+
+[node name="End" type="HBoxContainer" parent="Menu/Grid"]
+margin_top = 52.0
+margin_right = 712.0
+margin_bottom = 72.0
+
+[node name="Auto" type="Button" parent="Menu/Grid/End"]
+margin_right = 27.0
+margin_bottom = 20.0
+text = "all"
+
+[node name="End2" type="HSeparator" parent="Menu/Grid"]
+margin_top = 77.0
+margin_right = 712.0
+margin_bottom = 81.0
+
+[connection signal="pressed" from="Menu/Grid/Start/Form/Button" to="Menu/Grid/Start" method="_on_Button_pressed"]
+[connection signal="pressed" from="Menu/Grid/Start/Form/FeaturePBF" to="Menu/Grid/Layers" method="_on_Auto_pressed"]
+[connection signal="pressed" from="Menu/Grid/Start/Form/FeatureOverwrite" to="Menu/Grid/Layers" method="_on_Auto_pressed"]
+[connection signal="pressed" from="Menu/Grid/Start/Form/FeatureResource" to="Menu/Grid/Layers" method="_on_Auto_pressed"]
+[connection signal="pressed" from="Menu/Grid/End/Auto" to="Menu/Grid/Layers" method="_on_Auto_pressed"]

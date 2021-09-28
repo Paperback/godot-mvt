@@ -47,12 +47,14 @@ public class MvtTile : Node
 				foreach(var parts in feature.Geometry<long>(clipBuffer, 1.0f))
 				{
 					List<Vector2> geom = new List<Vector2>();
+					//Vector2[] geom = []
 					foreach(var point in parts)
 					{
 						geom.Add(new Vector2(point.X, point.Y));
 //						node.Call("geometry_point", new Vector2D(point.X, point.Y));
 					}
-					node.Call("geometry_add", geom.ToArray(), name);
+					node.Call("geometry_add", geom, layerName);
+					geom = null;
 				}
 				
 //				var parts = feature.Geometry<long>(clipBuffer, 1.0f);
@@ -66,6 +68,7 @@ public class MvtTile : Node
 //				}
 			}
 		}
+		tile = null;
 	}
 
 	public string importGeoJson(byte[] bufferedData)

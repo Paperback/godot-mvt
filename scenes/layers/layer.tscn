@@ -1,0 +1,108 @@
+[gd_scene load_steps=4 format=2]
+
+[sub_resource type="GDScript" id=1]
+script/source = "extends VBoxContainer
+
+var resource: MvtLayer
+
+func _init():
+	visible = false
+
+func _ready():
+	rebuild()
+	start_download()
+
+onready var Name = $Container/Name
+
+func rebuild():
+	Name.text = resource.id
+
+func start_download():
+	#var result = RequestJob.request(State.host, State.port, '/public.mathymetry.json')
+	Worker.post_job(LayerIndexRequestJob.new(self, 'completed_download', resource.id + '.json'))
+
+func completed_download(request: LayerIndexRequestJob):
+	visible = true
+	var tiles := []
+	for tile in request.response.tiles:
+		var t := MvtLayerTiles.new()
+		t.url = tile
+		t.layer = resource
+		t.from_data(request.response)
+		tiles.push_back(t)
+	if request.response.grids:
+		for tile in request.response.grids:
+			var t := MvtLayerTiles.new()
+			t.url = tile
+			t.layer = resource
+			t.from_data(request.response)
+			tiles.push_back(t)
+	resource.tiles = tiles
+	$Tiles.add_layer_tiles(resource)
+	State.save_layer(resource)
+"
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Button
+
+func _pressed():
+	#var node: Node = get_parent()
+	#var layer: MvtLayer = node.get('resource')
+	get_parent().get_parent().start_download()
+	disabled = true
+	
+"
+
+[sub_resource type="GDScript" id=3]
+script/source = "extends VBoxContainer
+
+func add_layer_tiles(layer: MvtLayer):
+	print(layer)
+	for tile in layer.tiles:
+		var node = preload('tile.tscn').instance()
+		node.resource = tile
+		add_child(node)
+
+#func start_download(layer: MvtLayer):
+#	for tile in layer.tiles.tiles:
+#		add_layer_tile(layer, tile)
+"
+
+[node name="Layer" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Container" type="HBoxContainer" parent="."]
+margin_right = 1024.0
+margin_bottom = 596.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Name" type="Label" parent="Container"]
+margin_top = 291.0
+margin_right = 344.0
+margin_bottom = 305.0
+rect_min_size = Vector2( 344, 0 )
+
+[node name="Index" type="Button" parent="Container"]
+visible = false
+margin_left = 410.0
+margin_right = 458.0
+margin_bottom = 596.0
+text = "Index"
+script = SubResource( 2 )
+
+[node name="Tiles" type="VBoxContainer" parent="."]
+margin_top = 600.0
+margin_right = 1024.0
+margin_bottom = 600.0
+script = SubResource( 3 )
