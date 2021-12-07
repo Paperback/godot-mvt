@@ -246,7 +246,7 @@ namespace Mapbox.VectorTile
 				//TODO: find equivalent of 'Distinct()' for NET20
 #if !NET20
 				if (layer.Values.Count != layer.Values.Distinct().Count()) {
-					throw new System.Exception(string.Format("Layer [{0}]: duplicate attribute values found", layer.Name));
+					// throw new System.Exception(string.Format("Layer [{0}]: duplicate attribute values found", layer.Name));
 				}
 #endif
 			}
