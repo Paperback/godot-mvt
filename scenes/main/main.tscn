@@ -132,7 +132,7 @@ margin_left = 164.0
 margin_right = 275.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 111, 0 )
-text = "192.168.1.191"
+text = "192.168.1.177"
 placeholder_text = "Host"
 __meta__ = {
 "_edit_use_anchors_": false

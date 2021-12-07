@@ -1,4 +1,4 @@
-﻿/*******************************************************************************
+/*******************************************************************************
 *                                                                              *
 * Author    :  Angus Johnson                                                   *
 * Version   :  6.4.0                                                           *
@@ -379,27 +379,27 @@ namespace Mapbox.VectorTile.Geometry
 				public cInt X;
 				public cInt Y;
 #if use_xyz
-    public cInt Z;
-    
-    public IntPoint(cInt x, cInt y, cInt z = 0)
-    {
-      this.X = x; this.Y = y; this.Z = z;
-    }
-    
-    public IntPoint(double x, double y, double z = 0)
-    {
-      this.X = (cInt)x; this.Y = (cInt)y; this.Z = (cInt)z;
-    }
-    
-    public IntPoint(DoublePoint dp)
-    {
-      this.X = (cInt)dp.X; this.Y = (cInt)dp.Y; this.Z = 0;
-    }
+	public cInt Z;
+	
+	public IntPoint(cInt x, cInt y, cInt z = 0)
+	{
+	  this.X = x; this.Y = y; this.Z = z;
+	}
+	
+	public IntPoint(double x, double y, double z = 0)
+	{
+	  this.X = (cInt)x; this.Y = (cInt)y; this.Z = (cInt)z;
+	}
+	
+	public IntPoint(DoublePoint dp)
+	{
+	  this.X = (cInt)dp.X; this.Y = (cInt)dp.Y; this.Z = 0;
+	}
 
-    public IntPoint(IntPoint pt)
-    {
-      this.X = pt.X; this.Y = pt.Y; this.Z = pt.Z;
-    }
+	public IntPoint(IntPoint pt)
+	{
+	  this.X = pt.X; this.Y = pt.Y; this.Z = pt.Z;
+	}
 #else
 				public IntPoint(cInt X, cInt Y)
 				{
@@ -589,8 +589,8 @@ namespace Mapbox.VectorTile.Geometry
 				internal static bool near_zero(double val) { return (val > -tolerance) && (val < tolerance); }
 
 #if use_int32
-    public const cInt loRange = 0x7FFF;
-    public const cInt hiRange = 0x7FFF;
+	public const cInt loRange = 0x7FFF;
+	public const cInt hiRange = 0x7FFF;
 #else
 				public const cInt loRange = 0x3FFFFFFF;
 				public const cInt hiRange = 0x3FFFFFFFFFFFFFFFL;
@@ -949,8 +949,8 @@ namespace Mapbox.VectorTile.Geometry
 					if (!Closed && polyType == PolyType.ptClip)
 						throw new ClipperException("AddPath: Open paths must be subject.");
 #else
-      if (!Closed)
-        throw new ClipperException("AddPath: Open paths have been disabled.");
+	  if (!Closed)
+		throw new ClipperException("AddPath: Open paths have been disabled.");
 #endif
 
 					int highI = (int)pg.Count - 1;
@@ -1221,7 +1221,7 @@ namespace Mapbox.VectorTile.Geometry
 					//adjoining lower edge. [Helpful in the ProcessHorizontal() method.]
 					Swap(ref e.Top.X, ref e.Bot.X);
 #if use_xyz
-      Swap(ref e.Top.Z, ref e.Bot.Z);
+	  Swap(ref e.Top.Z, ref e.Bot.Z);
 #endif
 				}
 				//------------------------------------------------------------------------------
@@ -1484,9 +1484,9 @@ namespace Mapbox.VectorTile.Geometry
 				private List<Join> m_GhostJoins;
 				private bool m_UsingPolyTree;
 #if use_xyz
-      public delegate void ZFillCallback(IntPoint bot1, IntPoint top1, 
-        IntPoint bot2, IntPoint top2, ref IntPoint pt);
-      public ZFillCallback ZFillFunction { get; set; }
+	  public delegate void ZFillCallback(IntPoint bot1, IntPoint top1, 
+		IntPoint bot2, IntPoint top2, ref IntPoint pt);
+	  public ZFillCallback ZFillFunction { get; set; }
 #endif
 				public Clipper(int InitOptions = 0) : base() //constructor
 				{
@@ -1505,7 +1505,7 @@ namespace Mapbox.VectorTile.Geometry
 					StrictlySimple = (ioStrictlySimple & InitOptions) != 0;
 					PreserveCollinear = (ioPreserveCollinear & InitOptions) != 0;
 #if use_xyz
-          ZFillFunction = null;
+		  ZFillFunction = null;
 #endif
 				}
 				//------------------------------------------------------------------------------
@@ -1735,16 +1735,16 @@ namespace Mapbox.VectorTile.Geometry
 				//------------------------------------------------------------------------------
 
 #if use_xyz
-      internal void SetZ(ref IntPoint pt, TEdge e1, TEdge e2)
-      {
-        if (pt.Z != 0 || ZFillFunction == null) return;
-        else if (pt == e1.Bot) pt.Z = e1.Bot.Z;
-        else if (pt == e1.Top) pt.Z = e1.Top.Z;
-        else if (pt == e2.Bot) pt.Z = e2.Bot.Z;
-        else if (pt == e2.Top) pt.Z = e2.Top.Z;
-        else ZFillFunction(e1.Bot, e1.Top, e2.Bot, e2.Top, ref pt);
-      }
-      //------------------------------------------------------------------------------
+	  internal void SetZ(ref IntPoint pt, TEdge e1, TEdge e2)
+	  {
+		if (pt.Z != 0 || ZFillFunction == null) return;
+		else if (pt == e1.Bot) pt.Z = e1.Bot.Z;
+		else if (pt == e1.Top) pt.Z = e1.Top.Z;
+		else if (pt == e2.Bot) pt.Z = e2.Bot.Z;
+		else if (pt == e2.Top) pt.Z = e2.Top.Z;
+		else ZFillFunction(e1.Bot, e1.Top, e2.Bot, e2.Top, ref pt);
+	  }
+	  //------------------------------------------------------------------------------
 #endif
 
 				private void InsertLocalMinimaIntoAEL(cInt botY)
@@ -2655,7 +2655,7 @@ namespace Mapbox.VectorTile.Geometry
 					bool e2Contributing = (e2.OutIdx >= 0);
 
 #if use_xyz
-          SetZ(ref pt, e1, e2);
+		  SetZ(ref pt, e1, e2);
 #endif
 
 #if use_lines
@@ -3443,7 +3443,7 @@ namespace Mapbox.VectorTile.Geometry
 								{
 									IntPoint ip = new IntPoint(e.Curr);
 #if use_xyz
-                SetZ(ref ip, ePrev, e);
+				SetZ(ref ip, ePrev, e);
 #endif
 									OutPt op = AddOutPt(ePrev, ip);
 									OutPt op2 = AddOutPt(e, ip);

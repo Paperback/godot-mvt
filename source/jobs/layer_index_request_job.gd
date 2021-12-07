@@ -20,30 +20,39 @@ func _load() -> Array:
 	if not directory.file_exists(dir): # and !State.feature.overwrite:
 		response = .request(url.host, str(url.port), url.path)
 		State.save_pbf(tile.layer.id, filename, response)
-#	else:
-#		var f = File.new()
-#		f.open(dir, File.READ)
-#		response = f.get_buffer(f.get_len())
-#		f.close()
+	else:
+		var f = File.new()
+		f.open(dir, File.READ)
+		response = f.get_buffer(f.get_len())
+		f.close()
 	if State.feature.resource and response.size() > 0:
 		_import_resource(response)
 	return []
 
+var resource: MvtTile
 var MvtImporter = load("res://addons/mvt/MvtTile.cs")
 func _import_resource(response: PoolByteArray):
-	var resource: MvtTile = MvtTile.new(tile.layer, tile, x, y, z)
+	resource = MvtTile.new()
+	resource.geometry = MvtGeometry.new()
+	resource.layer = tile.layer
+	resource.x = x
+	resource.y = y
+	resource.z = z
 	var mvt = MvtImporter.new()
 	mvt.import(self, response, tile.layer.table)
 	mvt.queue_free()
-	resource.geometry = geometry
-	geometry = []
 	if not resource.geometry.empty():
 		State.save_tile(resource)
 #		ResourceSaver.save(location + "/%s-%s.tres" % [x, y], data)
 
-var geometry: Array = []
-func geometry_add(geom: PoolVector2Array, name: String):
-	geometry.append(geom)
+var geometry := []
+func feature_add(type: String, properties: Dictionary = {}):
+	resource.geometry.submit(type, geometry.duplicate(), properties)
+	geometry.clear()
+
+func geometry_add(geom: PoolVector2Array):
+	geometry.push_back(geom)
+	geom.resize(0)
 
 #func import(name: String, pbf: String, x: int, y: int, z: int):
 #	var layer: MvtLayer = layers[name]

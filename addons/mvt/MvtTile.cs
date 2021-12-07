@@ -53,9 +53,11 @@ public class MvtTile : Node
 						geom.Add(new Vector2(point.X, point.Y));
 //						node.Call("geometry_point", new Vector2D(point.X, point.Y));
 					}
-					node.Call("geometry_add", geom, layerName);
+					node.Call("geometry_add", geom);
 					geom = null;
 				}
+				
+				node.Call("feature_add", type, feature.GetProperties());
 				
 //				var parts = feature.Geometry<long>(clipBuffer, 1.0f);
 //				node.Call("geometry_add");

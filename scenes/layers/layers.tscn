@@ -9,7 +9,6 @@ func download(layer: Dictionary):
 	node.resource = layer_mvt
 	add_child(node)
 
-
 func _on_Auto_pressed():
 	if State.feature.pbf == false: return
 	for child in get_children():

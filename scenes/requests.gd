@@ -20,9 +20,6 @@ func _http_layer_pbf_request_completed(result, response_code, headers, body, lay
 	layers.import(layer.id, tile, x, y, z)
 	layers.emit_signal("layer_updated", layer)
 
-
-
-
 func _on_Layers_informed(layer: MvtLayer):
 	var request = HTTPRequest.new()
 	request.use_threads = true
