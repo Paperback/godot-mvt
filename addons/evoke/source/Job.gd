@@ -3,7 +3,7 @@ class_name Job extends Reference
 var requester: Node
 var staging_node: Node
 var callback: String
-var batch := 1000
+var batch := 128
 var to_instance_ := []
 
 func _init(requester: Node, callback: String) -> void:

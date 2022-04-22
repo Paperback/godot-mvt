@@ -132,7 +132,7 @@ margin_left = 164.0
 margin_right = 275.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 111, 0 )
-text = "192.168.1.177"
+text = "192.168.1.160"
 placeholder_text = "Host"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -175,6 +175,7 @@ script = SubResource( 2 )
 margin_left = 595.0
 margin_right = 712.0
 margin_bottom = 24.0
+pressed = true
 text = "save resource"
 script = SubResource( 3 )
 
@@ -183,22 +184,36 @@ margin_top = 29.0
 margin_right = 712.0
 margin_bottom = 33.0
 
-[node name="Layers" parent="Menu/Grid" instance=ExtResource( 3 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
+[node name="MarginContainer" type="MarginContainer" parent="Menu/Grid"]
 margin_top = 38.0
 margin_right = 712.0
-margin_bottom = 38.0
+margin_bottom = 593.0
+rect_min_size = Vector2( 0, 555 )
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Menu/Grid/MarginContainer"]
+margin_right = 712.0
+margin_bottom = 555.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Layers" parent="Menu/Grid/MarginContainer/ScrollContainer" instance=ExtResource( 3 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 712.0
+margin_bottom = 555.0
+rect_min_size = Vector2( 0, 255 )
 
 [node name="VSeparator" type="HSeparator" parent="Menu/Grid"]
-margin_top = 43.0
+margin_top = 598.0
 margin_right = 712.0
-margin_bottom = 47.0
+margin_bottom = 602.0
 
 [node name="End" type="HBoxContainer" parent="Menu/Grid"]
-margin_top = 52.0
+margin_top = 607.0
 margin_right = 712.0
-margin_bottom = 72.0
+margin_bottom = 627.0
 
 [node name="Auto" type="Button" parent="Menu/Grid/End"]
 margin_right = 27.0
@@ -206,12 +221,12 @@ margin_bottom = 20.0
 text = "all"
 
 [node name="End2" type="HSeparator" parent="Menu/Grid"]
-margin_top = 77.0
+margin_top = 632.0
 margin_right = 712.0
-margin_bottom = 81.0
+margin_bottom = 636.0
 
 [connection signal="pressed" from="Menu/Grid/Start/Form/Button" to="Menu/Grid/Start" method="_on_Button_pressed"]
-[connection signal="pressed" from="Menu/Grid/Start/Form/FeaturePBF" to="Menu/Grid/Layers" method="_on_Auto_pressed"]
-[connection signal="pressed" from="Menu/Grid/Start/Form/FeatureOverwrite" to="Menu/Grid/Layers" method="_on_Auto_pressed"]
-[connection signal="pressed" from="Menu/Grid/Start/Form/FeatureResource" to="Menu/Grid/Layers" method="_on_Auto_pressed"]
-[connection signal="pressed" from="Menu/Grid/End/Auto" to="Menu/Grid/Layers" method="_on_Auto_pressed"]
+[connection signal="pressed" from="Menu/Grid/Start/Form/FeaturePBF" to="Menu/Grid/MarginContainer/ScrollContainer/Layers" method="_on_Auto_pressed"]
+[connection signal="pressed" from="Menu/Grid/Start/Form/FeatureOverwrite" to="Menu/Grid/MarginContainer/ScrollContainer/Layers" method="_on_Auto_pressed"]
+[connection signal="pressed" from="Menu/Grid/Start/Form/FeatureResource" to="Menu/Grid/MarginContainer/ScrollContainer/Layers" method="_on_Auto_pressed"]
+[connection signal="pressed" from="Menu/Grid/End/Auto" to="Menu/Grid/MarginContainer/ScrollContainer/Layers" method="_on_Auto_pressed"]

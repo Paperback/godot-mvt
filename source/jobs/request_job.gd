@@ -42,7 +42,7 @@ static func request(host: String, port: String = '80', path: String = '') -> Poo
 	else:
 		# Or just plain Content-Length
 		bl = http.get_response_body_length()
-		print("Response Length: ", bl)
+		#("Response Length: ", bl)
 
 	# This method works for both anyway
 	var rb := PoolByteArray() # Array that will hold the data.

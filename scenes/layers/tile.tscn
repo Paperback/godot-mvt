@@ -13,7 +13,6 @@ class BuildPathJob extends Job:
 		var limit_minzoom = 6
 		var limit_maxzoom = 6 #resource.maxzoom
 		for z in range(max(limit_minzoom, resource.minzoom), min(limit_maxzoom, resource.maxzoom)+1):
-			
 			for x in range(0, pow(2, z)):
 				for y in range(0, pow(2, z)):
 					var url: String = resource.url.format({
@@ -44,7 +43,7 @@ func rebuild():
 var count_finished := 0
 var count_total := 0
 var urls := []
-var max_queue := 128
+var max_queue := 256
 var active_queue := 0
 func build_paths():
 	$Download.disabled = true
@@ -89,7 +88,8 @@ func _process(delta: float):
 func completed_download(request: LayerTileRequestJob):
 	count_finished += 1
 	active_queue -= 1
-	print(request.url)
+	#print(request.url)
+	# NOTE(sam): good place to print above
 	rebuild()
 	#resource.tiles = request.response 
 

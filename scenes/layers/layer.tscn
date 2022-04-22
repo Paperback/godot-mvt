@@ -19,7 +19,8 @@ func rebuild():
 
 func start_download():
 	#var result = RequestJob.request(State.host, State.port, '/public.mathymetry.json')
-	Worker.post_job(LayerIndexRequestJob.new(self, 'completed_download', resource.id + '.json'))
+	#Worker.post_job(LayerIndexRequestJob.new(self, 'completed_download', resource.id + '.json'))
+	Worker.post_job(LayerIndexRequestJob.new(self, 'completed_download', '/'+resource.id + '.json'))
 
 func completed_download(request: LayerIndexRequestJob):
 	visible = true
@@ -30,7 +31,7 @@ func completed_download(request: LayerIndexRequestJob):
 		t.layer = resource
 		t.from_data(request.response)
 		tiles.push_back(t)
-	if request.response.grids:
+	if request.response.get('grids'):
 		for tile in request.response.grids:
 			var t := MvtLayerTiles.new()
 			t.url = tile

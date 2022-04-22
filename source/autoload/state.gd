@@ -6,7 +6,7 @@ var port: String = ''
 var feature: Dictionary = {
 	'overwrite': true,
 	'pbf': true,
-	'resource': false
+	'resource': true
 }
 func mapsdir(path: String = '') -> String:
 	return project+'/'+path
@@ -24,10 +24,11 @@ func save_layer(layer: MvtLayer):
 	
 func save_tile(tile: MvtTile):
 	var dir := mapsdir(tile.layer.id.split('.').join('/')+'/res/'+'%s/%s-%s.tres' % [tile.z, tile.x, tile.y])
-	print(dir)
+	var layer_path := mapsdir(tile.layer.id.split('.').join('/')+'/res/layer.tres')
 	var directory = Directory.new()
 	if not directory.dir_exists(dir.get_base_dir()): directory.make_dir_recursive(dir.get_base_dir())
-	ResourceSaver.save(dir, tile, ResourceSaver.FLAG_REPLACE_SUBRESOURCE_PATHS)
+	tile.layer = load(layer_path)
+	ResourceSaver.save(dir, tile, ResourceSaver.FLAG_RELATIVE_PATHS)
 
 func save_pbf(layer: String, filename: String, data: PoolByteArray) -> bool:
 	var dir := mapsdir(layer.split('.').join('/')+'/pbf/'+filename)
