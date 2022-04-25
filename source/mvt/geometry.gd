@@ -17,6 +17,9 @@ func submit(t: String, geom: Array, props: Dictionary = {}):
 func empty() -> bool:
 	return data.size() == 0
 
+func size() -> int:
+	return data.size()
+
 func get_index(index: int) -> Dictionary:
 	return {
 		'type': type[index],

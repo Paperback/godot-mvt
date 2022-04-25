@@ -75,9 +75,6 @@ anchor_bottom = 1.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Container" type="HBoxContainer" parent="."]
 margin_right = 1024.0

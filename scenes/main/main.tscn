@@ -9,6 +9,7 @@ script/source = "extends VBoxContainer
 onready var host: LineEdit = $Form/Host
 onready var port: LineEdit = $Form/Port
 onready var folder: LineEdit = $Form/Folder
+onready var project: LineEdit = $Form/Project
 onready var button: Button = $Form/Button
 
 onready var f1: Button = $Form/FeaturePBF
@@ -37,7 +38,8 @@ func _on_Button_pressed():
 	_index_request()
 	State.host = host.text
 	State.port = port.text
-	State.project = folder.text
+	State.folder = folder.text
+	State.project = project.text
 	emit_signal(\"start_request\", host.text, port.text, folder.text)
 
 
@@ -106,7 +108,7 @@ __meta__ = {
 }
 
 [node name="Start" type="VBoxContainer" parent="Menu/Grid"]
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 24.0
 script = SubResource( 1 )
 __meta__ = {
@@ -114,7 +116,7 @@ __meta__ = {
 }
 
 [node name="Form" type="HBoxContainer" parent="Menu/Grid/Start"]
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 24.0
 
 [node name="Folder" type="LineEdit" parent="Menu/Grid/Start/Form"]
@@ -127,20 +129,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Host" type="LineEdit" parent="Menu/Grid/Start/Form"]
+[node name="Project" type="LineEdit" parent="Menu/Grid/Start/Form"]
 margin_left = 164.0
-margin_right = 275.0
+margin_right = 264.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 100, 0 )
+text = "world"
+placeholder_text = "URI"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Host" type="LineEdit" parent="Menu/Grid/Start/Form"]
+margin_left = 268.0
+margin_right = 379.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 111, 0 )
-text = "192.168.1.160"
+text = "192.168.1.211"
 placeholder_text = "Host"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Port" type="LineEdit" parent="Menu/Grid/Start/Form"]
-margin_left = 279.0
-margin_right = 337.0
+margin_left = 383.0
+margin_right = 441.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 44, 0 )
 text = "3000"
@@ -150,30 +163,30 @@ __meta__ = {
 }
 
 [node name="Button" type="Button" parent="Menu/Grid/Start/Form"]
-margin_left = 341.0
-margin_right = 382.0
+margin_left = 445.0
+margin_right = 486.0
 margin_bottom = 24.0
 text = "Start"
 
 [node name="FeaturePBF" type="CheckBox" parent="Menu/Grid/Start/Form"]
-margin_left = 386.0
-margin_right = 499.0
+margin_left = 490.0
+margin_right = 603.0
 margin_bottom = 24.0
 pressed = true
 text = "download pbf"
 script = SubResource( 2 )
 
 [node name="FeatureOverwrite" type="CheckBox" parent="Menu/Grid/Start/Form"]
-margin_left = 503.0
-margin_right = 591.0
+margin_left = 607.0
+margin_right = 695.0
 margin_bottom = 24.0
 pressed = true
 text = "overwrite"
 script = SubResource( 2 )
 
 [node name="FeatureResource" type="CheckBox" parent="Menu/Grid/Start/Form"]
-margin_left = 595.0
-margin_right = 712.0
+margin_left = 699.0
+margin_right = 816.0
 margin_bottom = 24.0
 pressed = true
 text = "save resource"
@@ -181,19 +194,19 @@ script = SubResource( 3 )
 
 [node name="VSeparator2" type="HSeparator" parent="Menu/Grid"]
 margin_top = 29.0
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 33.0
 
 [node name="MarginContainer" type="MarginContainer" parent="Menu/Grid"]
 margin_top = 38.0
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 593.0
 rect_min_size = Vector2( 0, 555 )
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Menu/Grid/MarginContainer"]
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 555.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -201,18 +214,18 @@ size_flags_vertical = 3
 [node name="Layers" parent="Menu/Grid/MarginContainer/ScrollContainer" instance=ExtResource( 3 )]
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 555.0
 rect_min_size = Vector2( 0, 255 )
 
 [node name="VSeparator" type="HSeparator" parent="Menu/Grid"]
 margin_top = 598.0
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 602.0
 
 [node name="End" type="HBoxContainer" parent="Menu/Grid"]
 margin_top = 607.0
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 627.0
 
 [node name="Auto" type="Button" parent="Menu/Grid/End"]
@@ -222,7 +235,7 @@ text = "all"
 
 [node name="End2" type="HSeparator" parent="Menu/Grid"]
 margin_top = 632.0
-margin_right = 712.0
+margin_right = 816.0
 margin_bottom = 636.0
 
 [connection signal="pressed" from="Menu/Grid/Start/Form/Button" to="Menu/Grid/Start" method="_on_Button_pressed"]

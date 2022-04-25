@@ -10,4 +10,4 @@ export_presets.cfg
 
 #project.godot
 
-data/maps/*
+data/*

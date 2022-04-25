@@ -1,6 +1,7 @@
 extends Node
 
 var project: String = ''
+var folder: String = ''
 var host: String = ''
 var port: String = ''
 var feature: Dictionary = {
@@ -9,12 +10,13 @@ var feature: Dictionary = {
 	'resource': true
 }
 func mapsdir(path: String = '') -> String:
-	return project+'/'+path
+	return folder+'/'+project+'/'+path
 
 func url(path: String = '') -> String:
 	return "http://%s:%s/%s" % [ host, port, path ]
 
 func save_layer(layer: MvtLayer):
+	layer.project = project
 	var dir := mapsdir(layer.id.split('.').join('/')+'/res/layer.tres')
 	#print(dir)
 	var directory = Directory.new()
