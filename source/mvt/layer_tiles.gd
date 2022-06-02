@@ -17,12 +17,19 @@ export(Dictionary) var data: Dictionary = {}
 
 func from_data(data: Dictionary):
 	var keys := data.keys()
-	#if keys.has('bounds') and data['bounds'].size() > 2:
-	#	data['bounds'] = Rect2(data['bounds'][0], data['bounds'][1], data['bounds'][2], data['bounds'][3])
-	if keys.has('center') and data['center']:
+	if keys.has('name'):
+		id = data['name']
+	if keys.has('bounds') and not data['bounds'] is Rect2 and data['bounds'].size() == 4:
+		var pos = Vector2(data['bounds'][0], data['bounds'][1])
+		var size = Vector2(data['bounds'][1], data['bounds'][2]) + (-pos)
+		data['bounds'] = Rect2(pos, size)
+	if keys.has('center'):
 		data['center'] = Vector2(data['center'][0], data['center'][1])
 	else:
-		data['centre'] = Vector2() #data.bounds.position + (data.bounds.size / 2))
+		if data.bounds == null or data.bounds.size == Vector2.ZERO:
+			data['center'] = Vector2(0.0,0.0)
+		else:
+			data['center'] = Vector2(0.0,0.0) # data.bounds.position + (data.bounds.size / 2.0)
 	for key in data.keys():
 		if get(key) != null:
 			set(key, data[key])

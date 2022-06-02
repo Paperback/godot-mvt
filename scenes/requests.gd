@@ -9,7 +9,7 @@ func _http_layer_info_request_completed(result, response_code, headers, body):
 	layers.update(response.name, 'tile', response)
 	layers.update(response.name, 'project', project)
 	#response.minzoom = 5
-	response.maxzoom = 6
+	#response.maxzoom = 6
 	print(response.maxzoom)
 	print(response.minzoom)
 	for z in range(response.minzoom, response.maxzoom):

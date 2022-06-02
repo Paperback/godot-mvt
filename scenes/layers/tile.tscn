@@ -10,9 +10,11 @@ class BuildPathJob extends Job:
 		self.resource = resource
 		
 	func _load():
-		var limit_minzoom = 6
-		var limit_maxzoom = 6 #resource.maxzoom
-		for z in range(max(limit_minzoom, resource.minzoom), min(limit_maxzoom, resource.maxzoom)+1):
+		#var limit_minzoom = 0
+		#var limit_maxzoom = 6 #resource.maxzoom
+		#min(limit_maxzoom, resource.maxzoom)+1
+		#max(resource.minzoom, resource.maxzoom)
+		for z in range(resource.minzoom, resource.maxzoom+1):
 			for x in range(0, pow(2, z)):
 				for y in range(0, pow(2, z)):
 					var url: String = resource.url.format({
@@ -142,9 +144,6 @@ func _pressed():
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Control" type="Control" parent="."]
 margin_bottom = 600.0
