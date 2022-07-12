@@ -42,7 +42,10 @@ func _import_resource(response: PoolByteArray):
 	mvt.import(self, response, tile.layer.table)
 	mvt.queue_free()
 	if not resource.geometry.empty():
-		State.save_tile(resource)
+		if State.feature['compress']:
+			State.save_tile_compressed(tile.layer, resource)
+		else:
+			State.save_tile(tile.layer, resource)
 #		ResourceSaver.save(location + "/%s-%s.tres" % [x, y], data)
 
 var geometry := []
