@@ -11,8 +11,8 @@ Provides godot resource abstractions for
 ## Limitations
 
 * Ingests HTTP only for now
-* C# and godot 3.4 (godot 4 support may came later)
-* Tested with [Martin](https://github.com/maplibre/martin)
+* C# and godot 3.4 (godot 4 support may arrive later)
+* Tested with [Martin](https://github.com/maplibre/martin) MVT server. Have problems with your MVT server? [Please let me know](https://github.com/Paperback/Godot-MVT/issues)
 
 ## Build godot geometry from vector tiles
 ```gdscript
