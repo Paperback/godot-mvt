@@ -17,7 +17,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "Job",
 "language": "GDScript",
-"path": "res://addons/evoke/source/Job.gd"
+"path": "res://addons/jobs/source/Job.gd"
 }, {
 "base": "RequestJob",
 "class": "LayerIndexRequestJob",
@@ -28,31 +28,6 @@ _global_script_classes=[ {
 "class": "LayerTileRequestJob",
 "language": "GDScript",
 "path": "res://source/jobs/layer_index_request_job.gd"
-}, {
-"base": "Object",
-"class": "Map",
-"language": "GDScript",
-"path": "res://source/map/map.gd"
-}, {
-"base": "Object",
-"class": "MapBounds",
-"language": "GDScript",
-"path": "res://source/map/bounds.gd"
-}, {
-"base": "Object",
-"class": "MapCoordinates",
-"language": "GDScript",
-"path": "res://source/map/coordinates.gd"
-}, {
-"base": "Node2D",
-"class": "MapNode",
-"language": "GDScript",
-"path": "res://source/map/node.gd"
-}, {
-"base": "Node2D",
-"class": "MapTile",
-"language": "GDScript",
-"path": "res://source/map/tile.gd"
 }, {
 "base": "Resource",
 "class": "MvtGeometry",
@@ -83,29 +58,18 @@ _global_script_classes=[ {
 "class": "RequestJob",
 "language": "GDScript",
 "path": "res://source/jobs/request_job.gd"
-}, {
-"base": "Object",
-"class": "TileBounds",
-"language": "GDScript",
-"path": "res://source/map/tile/bounds.gd"
 } ]
 _global_script_class_icons={
 "IndexRequestJob": "",
 "Job": "",
 "LayerIndexRequestJob": "",
 "LayerTileRequestJob": "",
-"Map": "",
-"MapBounds": "",
-"MapCoordinates": "",
-"MapNode": "",
-"MapTile": "",
 "MvtGeometry": "",
 "MvtLayer": "",
 "MvtLayerTiles": "",
 "MvtMap": "",
 "MvtTile": "",
-"RequestJob": "",
-"TileBounds": ""
+"RequestJob": ""
 }
 
 [application]
@@ -116,11 +80,11 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Log="*res://addons/evoke/autoload/log.gd"
+Log="*res://source/autoload/log.gd"
 Application="*res://addons/evoke/autoload/application.gd"
-Util="*res://addons/evoke/autoload/util.gd"
+Util="*res://source/autoload/util.gd"
 MeshHelper="*res://addons/evoke/autoload/mesh.gd"
-Worker="*res://addons/evoke/source/worker.gd"
+Worker="*res://addons/jobs/source/worker.gd"
 State="*res://source/autoload/state.gd"
 
 [global]

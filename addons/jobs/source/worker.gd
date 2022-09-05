@@ -1,5 +1,4 @@
 extends Node
-#class_name Worker
 
 var mutex := Mutex.new()
 var done_mutex := Mutex.new()
