@@ -45,13 +45,6 @@ var logger
 func _init():
 	logger = Log.new()
 
-func _notification(what):
-	if what == NOTIFICATION_PREDELETE:
-		logger.release()
-
-func _exit_tree():
-	logger.release()
-
 func supress(lvl):
 	logger.supress(lvl)
 
