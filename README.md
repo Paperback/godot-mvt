@@ -13,7 +13,7 @@ Supports attributes.
 ## Limitations
 
 * Currently only ingests via HTTP.
-* C# and godot 3.5 (godot 4 support rewrite may arrive later)
+* Application requires C# and godot 3.5 to run, although the resources it creates will work in godot 4 no problem.
 * Tested with [Martin](https://github.com/maplibre/martin) tile server. Have problems with your MVT server? [let me know](https://github.com/Paperback/Godot-MVT/issues).
 * Due to fundamental limitations in godot's pooled memory, it can crash when building *extremely* complex features. To prevent this split your features up or reduce complexity for larger tiles, and only process 1 layer at a time. This is fixed in godot 4.
 
