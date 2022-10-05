@@ -1,6 +1,6 @@
 # Godot-MVT
 
-Standalone godot application that can ingest [mapbox vector tiles](https://docs.mapbox.com/data/tilesets/guides/vector-tiles-introduction/) from tile servers and save them as resources.
+Standalone godot application that can ingest [mapbox vector tiles](https://docs.mapbox.com/data/tilesets/guides/vector-tiles-introduction/) from tile servers using [tileJSON](https://github.com/mapbox/tilejson-spec) and save them as resources. Uses C# and multithreading so it's pretty quick.
 
 Provides godot resource abstractions for
 * MvtLayer
@@ -8,13 +8,16 @@ Provides godot resource abstractions for
 * MvtTile
 * MvtGeometry
 
+Supports attributes.
+
 ## Limitations
 
-* Ingests HTTP only for now
-* C# and godot 3.4 (godot 4 support may arrive later)
-* Tested with [Martin](https://github.com/maplibre/martin) MVT server. Have problems with your MVT server? [Please let me know](https://github.com/Paperback/Godot-MVT/issues)
+* Currently only ingests via HTTP.
+* C# and godot 3.5 (godot 4 support rewrite may arrive later)
+* Tested with [Martin](https://github.com/maplibre/martin) tile server. Have problems with your MVT server? [let me know](https://github.com/Paperback/Godot-MVT/issues).
+* Due to fundamental limitations in godot's pooled memory, it can crash when building *extremely* complex features. To prevent this split your features up or reduce complexity for larger tiles, and only process 1 layer at a time. This is fixed in godot 4.
 
-## Build godot geometry from vector tiles
+## Render geometry in godot from vector tiles
 ```gdscript
 var tile: MvtTile = load('res://data/tile/6/32-32.tres')
 var geometry: MvtGeometry = tile.geometry
